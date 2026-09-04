@@ -1,0 +1,16 @@
+{% extends 'catering/dashboard/base_dashboard.html' %}
+{% block title %}Confirm Delete{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="mb-4">Confirm Delete</h1>
+<div class="card">
+    <div class="card-body">
+        <p>Are you sure you want to delete <strong>{{ object }}</strong>? This action cannot be undone.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

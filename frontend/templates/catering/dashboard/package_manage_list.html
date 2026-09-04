@@ -1,0 +1,47 @@
+{% extends 'catering/dashboard/base_dashboard.html' %}
+{% block title %}Manage Packages{% endblock %}
+
+{% block dashboard_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Catering Packages</h1>
+    <a href="{% url 'catering:package_create' %}" class="btn btn-brand"><i class="bi bi-plus-lg"></i> Add Package</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table bg-white align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price/Plate</th>
+                <th>Guests</th>
+                <th>Active</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for package in packages %}
+                <tr>
+                    <td>{{ package.name }}</td>
+                    <td>{{ package.category.name }}</td>
+                    <td>&#8377;{{ package.price_per_plate }}</td>
+                    <td>{{ package.min_guests }}&ndash;{{ package.max_guests }}</td>
+                    <td>
+                        {% if package.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'catering:package_update' package.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <a href="{% url 'catering:package_delete' package.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6" class="text-muted text-center">No packages yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

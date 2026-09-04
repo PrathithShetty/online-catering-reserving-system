@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Review {{ package.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="mb-1">Review: {{ package.name }}</h2>
+                <p class="text-muted">Order #{{ order.pk }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-brand">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

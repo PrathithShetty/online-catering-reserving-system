@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Menu | The Rasaganga{% endblock %}
+
+{% block content %}
+<div class="menu-hero mb-5 text-center">
+    <p class="hero-eyebrow">The Full Spread</p>
+    <h1>Our Menu</h1>
+    <p class="text-muted mx-auto" style="max-width: 34rem;">
+        Everything on this page is 100% vegetarian and made fresh to order. Browse by
+        section, then head to <a href="{% url 'catering:package_list' %}">Catering Packages</a>
+        to book a curated combo for your event &mdash; or call us on
+        <a href="tel:+919845655512">+91 98456 55512</a> for a custom à la carte spread.
+    </p>
+</div>
+
+{% for section in sections %}
+    <section class="menu-section mb-5">
+        <div class="row align-items-center g-4">
+            {% if section.image %}
+                <div class="col-md-4">
+                    <img src="{% static section.image %}" class="menu-section-img" alt="{{ section.name }}">
+                </div>
+            {% endif %}
+            <div class="{% if section.image %}col-md-8{% else %}col-12{% endif %}">
+                <h2 class="menu-section-title">{{ section.name }}</h2>
+                <ul class="menu-item-list">
+                    {% for item in section.items %}
+                        <li>
+                            <span class="menu-item-name">
+                                {{ item.name }}
+                                {% if item.is_veg %}
+                                    <i class="bi bi-circle-fill text-success menu-veg-dot" title="Vegetarian"></i>
+                                {% endif %}
+                            </span>
+                            <span class="menu-item-dots"></span>
+                            <span class="menu-item-price">
+                                {% if item.price %}&#8377;{{ item.price }}{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+{% empty %}
+    <p class="text-muted">The menu is being updated — check back soon.</p>
+{% endfor %}
+{% endblock %}

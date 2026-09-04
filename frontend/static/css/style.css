@@ -1,0 +1,355 @@
+:root {
+    --brand-primary: #c8393c;
+    --brand-primary-dark: #a12c2f;
+    --bg-dark: #171310;
+    --bg-dark-2: #221b16;
+    --brand-gold: #cda45e;
+    --brand-gold-bright: #e8c07d;
+    --brand-cream: #fff8f0;
+    --text-on-dark: #f5efe6;
+    --text-on-dark-muted: #b8ab9c;
+}
+
+body {
+    background-color: var(--brand-cream);
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    font-family: "Poppins", "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+h1, h2, h3, h4, h5, .navbar-brand,
+.card-title, .card-package .card-title {
+    font-family: "Playfair Display", "Segoe UI", serif;
+}
+
+/* ---------------------------------------------------------------- Navbar */
+
+.navbar {
+    background-color: var(--bg-dark);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.navbar-brand {
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: var(--brand-gold-bright) !important;
+    letter-spacing: 0.02em;
+}
+
+.navbar .nav-link {
+    color: var(--text-on-dark-muted) !important;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    padding-left: 0.9rem !important;
+    padding-right: 0.9rem !important;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.dropdown-toggle:hover {
+    color: var(--brand-gold-bright) !important;
+}
+
+/* ------------------------------------------------------------------ Hero */
+
+.hero-dark {
+    background-color: var(--bg-dark);
+    color: var(--text-on-dark);
+    border-radius: 0.75rem;
+    padding: 4rem 2.5rem;
+    margin-bottom: 3.5rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.78rem;
+    color: var(--brand-gold);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.hero-dark h1 {
+    font-size: clamp(2.1rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+}
+
+.hero-dark p.hero-sub {
+    color: var(--text-on-dark-muted);
+    font-size: 1.05rem;
+    max-width: 30rem;
+    margin-bottom: 2rem;
+}
+
+.btn-outline-gold {
+    border: 1.5px solid var(--brand-gold);
+    color: var(--text-on-dark);
+    background: transparent;
+    padding: 0.7rem 1.75rem;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-outline-gold:hover {
+    background-color: var(--brand-gold);
+    color: var(--bg-dark);
+}
+
+.hero-image-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+}
+
+.hero-image-wrap::before {
+    content: "";
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    background: radial-gradient(circle, rgba(205, 164, 94, 0.35), transparent 70%);
+    filter: blur(10px);
+    z-index: 0;
+}
+
+.hero-dish {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 45% 55% 60% 40% / 55% 45% 55% 45%;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* ------------------------------------------------------------ Footer */
+
+.footer {
+    background-color: var(--bg-dark);
+    color: var(--text-on-dark-muted);
+}
+
+.footer .fw-semibold {
+    color: var(--brand-gold-bright);
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+/* ------------------------------------------------------------ Cards */
+
+.card-package {
+    border: none;
+    border-top: 3px solid var(--brand-gold);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+}
+
+.card-package:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-package .card-img-top {
+    height: 190px;
+    object-fit: cover;
+    background-color: #eee;
+}
+
+.text-brand {
+    color: var(--brand-primary);
+}
+
+.btn-brand {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+}
+
+.btn-brand:hover {
+    background-color: var(--brand-primary-dark);
+    border-color: var(--brand-primary-dark);
+    color: #fff;
+}
+
+.category-pill {
+    border-radius: 2rem;
+}
+
+.category-pill:hover {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #fff;
+}
+
+.section-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--brand-primary);
+    margin-bottom: 0.35rem;
+}
+
+/* -------------------------------------------------------- Occasion cards */
+
+.occasion-card {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background-color: var(--bg-dark-2);
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.occasion-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+
+.occasion-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.occasion-card:hover img {
+    transform: scale(1.06);
+}
+
+.occasion-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 10, 8, 0.85), rgba(15, 10, 8, 0) 55%);
+}
+
+.occasion-card-label {
+    position: absolute;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 0.8rem;
+    z-index: 1;
+    color: #fff;
+    font-family: "Playfair Display", serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 1.15rem;
+}
+
+/* --------------------------------------------------------- Feature strip */
+
+.feature-strip {
+    padding: 2.5rem 0;
+    border-top: 1px solid rgba(58, 15, 16, 0.12);
+    border-bottom: 1px solid rgba(58, 15, 16, 0.12);
+}
+
+.feature-strip i {
+    font-size: 1.8rem;
+    color: var(--brand-gold);
+    margin-bottom: 0.6rem;
+    display: inline-block;
+}
+
+.feature-strip h5 {
+    font-style: italic;
+}
+
+/* ------------------------------------------------------------ Menu page */
+
+.menu-hero h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.menu-section-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.menu-section-title {
+    font-style: italic;
+    color: var(--brand-primary);
+    border-bottom: 2px solid var(--brand-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+    display: inline-block;
+}
+
+.menu-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item-list li {
+    display: flex;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    border-bottom: 1px dashed rgba(58, 15, 16, 0.12);
+}
+
+.menu-item-list li:last-child {
+    border-bottom: none;
+}
+
+.menu-item-name {
+    white-space: nowrap;
+}
+
+.menu-veg-dot {
+    font-size: 0.5rem;
+    vertical-align: middle;
+    margin-left: 0.35rem;
+}
+
+.menu-item-dots {
+    flex: 1;
+    border-bottom: 1px dotted #c7b9a8;
+    margin: 0 0.5rem 0.3rem;
+}
+
+.menu-item-price {
+    font-weight: 600;
+    color: var(--brand-primary-dark);
+    white-space: nowrap;
+}
+
+.visit-us img {
+    border: 3px solid var(--brand-gold);
+}
+
+.status-badge-PENDING { background-color: #e0a72e; }
+.status-badge-CONFIRMED { background-color: #0d6efd; }
+.status-badge-REJECTED { background-color: #dc3545; }
+.status-badge-COMPLETED { background-color: #198754; }
+.status-badge-CANCELLED { background-color: #6c757d; }

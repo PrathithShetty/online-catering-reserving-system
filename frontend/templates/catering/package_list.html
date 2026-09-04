@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Catering Packages{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Catering Packages</h1>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-sm-4">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm-6">
+        <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search packages...">
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-brand w-100" type="submit">Search</button>
+    </div>
+</form>
+
+<div class="row g-4">
+    {% for package in page_obj %}
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-package">
+                {% if package.image %}
+                    <img src="{{ package.image.url }}" class="card-img-top" alt="{{ package.name }}">
+                {% else %}
+                    <img src="https://placehold.co/600x400?text={{ package.name|urlencode }}" class="card-img-top" alt="{{ package.name }}">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-secondary align-self-start mb-2">{{ package.category.name }}</span>
+                    <h5 class="card-title">{{ package.name }}</h5>
+                    <p class="card-text text-muted small">{{ package.description|truncatewords:15 }}</p>
+                    <p class="small text-muted mb-1">
+                        <i class="bi bi-people"></i> {{ package.min_guests }}&ndash;{{ package.max_guests }} guests
+                    </p>
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <strong>&#8377;{{ package.price_per_plate }}/plate</strong>
+                        <a href="{{ package.get_absolute_url }}" class="btn btn-brand btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No packages match your search.</p>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Previous</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

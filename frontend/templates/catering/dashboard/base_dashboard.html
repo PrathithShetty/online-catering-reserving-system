@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="list-group shadow-sm">
+            <a href="{% url 'catering:dashboard_home' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-speedometer2"></i> Overview
+            </a>
+            <a href="{% url 'catering:package_manage_list' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-box-seam"></i> Catering Packages
+            </a>
+            <a href="{% url 'catering:menu_item_manage_list' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-egg-fried"></i> Menu Items
+            </a>
+            <a href="{% url 'catering:category_manage_list' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-tags"></i> Categories
+            </a>
+            <a href="{% url 'orders:order_manage_list' %}" class="list-group-item list-group-item-action">
+                <i class="bi bi-receipt"></i> Bookings / Orders
+            </a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

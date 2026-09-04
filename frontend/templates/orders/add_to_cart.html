@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ package.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="mb-1">Book: {{ package.name }}</h2>
+                <p class="text-muted">&#8377;{{ package.price_per_plate }} per plate &middot; {{ package.min_guests }}&ndash;{{ package.max_guests }} guests</p>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-brand">Add to Cart</button>
+                    <a href="{{ package.get_absolute_url }}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

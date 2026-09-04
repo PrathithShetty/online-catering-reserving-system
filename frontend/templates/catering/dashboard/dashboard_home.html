@@ -1,0 +1,41 @@
+{% extends 'catering/dashboard/base_dashboard.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<h1 class="mb-4">Welcome, {{ user.username }}</h1>
+<div class="row g-3">
+    <div class="col-sm-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-box-seam fs-1 text-brand"></i>
+                <h2 class="mt-2">{{ package_count }}</h2>
+                <p class="text-muted mb-0">Catering Packages</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-egg-fried fs-1 text-brand"></i>
+                <h2 class="mt-2">{{ menu_item_count }}</h2>
+                <p class="text-muted mb-0">Menu Items</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-tags fs-1 text-brand"></i>
+                <h2 class="mt-2">{{ category_count }}</h2>
+                <p class="text-muted mb-0">Categories</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'orders:order_manage_list' %}" class="btn btn-brand">
+        <i class="bi bi-receipt"></i> View All Bookings
+    </a>
+</div>
+{% endblock %}

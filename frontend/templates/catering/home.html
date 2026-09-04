@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}The Rasaganga | South Indian Vegetarian Catering{% endblock %}
+
+{% block content %}
+<div class="hero-dark">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+            <p class="hero-eyebrow">Bellandur &middot; Outer Ring Road</p>
+            <h1>A Premium<br>And Authentic<br>Vegetarian Kitchen</h1>
+            <p class="hero-sub">South Indian tiffin, thalis and sweets from The Rasaganga &mdash; catered fresh for weddings, birthdays and corporate events.</p>
+            <a href="{% url 'catering:package_list' %}" class="btn btn-outline-gold">Explore Packages</a>
+        </div>
+        <div class="col-lg-6">
+            <div class="hero-image-wrap">
+                <img src="{% static 'img/rasaganga/food4.jpg' %}" class="hero-dish" alt="The Rasaganga signature thali">
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="section-eyebrow">What's The Occasion</p>
+<h2 class="mb-4">Browse by Occasion</h2>
+<div class="row g-3 mb-5">
+    {% for category in categories %}
+        <div class="col-6 col-lg-3">
+            <a href="{% url 'catering:package_list' %}?category={{ category.slug }}" class="occasion-card">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                {% endif %}
+                <span class="occasion-card-label">{{ category.name }}</span>
+            </a>
+        </div>
+    {% empty %}
+        <p class="text-muted">No categories yet. Check back soon!</p>
+    {% endfor %}
+</div>
+
+<div class="feature-strip row g-4 text-center mb-5">
+    <div class="col-md-4">
+        <i class="bi bi-egg-fried"></i>
+        <h5>100% Vegetarian</h5>
+        <p class="text-muted small mb-0">No meat, no eggs, no alcohol on the premises &mdash; ever.</p>
+    </div>
+    <div class="col-md-4">
+        <i class="bi bi-fire"></i>
+        <h5>Cooked Fresh, To Order</h5>
+        <p class="text-muted small mb-0">Every plate is prepared for your event date, not reheated from a freezer.</p>
+    </div>
+    <div class="col-md-4">
+        <i class="bi bi-geo-alt"></i>
+        <h5>A Bellandur Original</h5>
+        <p class="text-muted small mb-0">Serving the Outer Ring Road office crowd long before we catered events.</p>
+    </div>
+</div>
+
+<p class="section-eyebrow">Ready To Book</p>
+<h2 class="mb-4">Featured Packages</h2>
+<div class="row g-4">
+    {% for package in featured_packages %}
+        <div class="col-sm-6 col-lg-4">
+            <div class="card card-package">
+                {% if package.image %}
+                    <img src="{{ package.image.url }}" class="card-img-top" alt="{{ package.name }}">
+                {% else %}
+                    <img src="https://placehold.co/600x400?text={{ package.name|urlencode }}" class="card-img-top" alt="{{ package.name }}">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-secondary align-self-start mb-2">{{ package.category.name }}</span>
+                    <h5 class="card-title">{{ package.name }}</h5>
+                    <p class="card-text text-muted small">{{ package.description|truncatewords:15 }}</p>
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <strong>&#8377;{{ package.price_per_plate }}/plate</strong>
+                        <a href="{{ package.get_absolute_url }}" class="btn btn-brand btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No packages available yet.</p>
+    {% endfor %}
+</div>
+
+<div class="row align-items-center mt-5 g-4 visit-us">
+    <div class="col-md-6">
+        <img src="{% static 'img/rasaganga/interior.jpg' %}" class="img-fluid rounded shadow-sm" alt="The Rasaganga storefront">
+    </div>
+    <div class="col-md-6">
+        <h2>Visit Us</h2>
+        <p class="text-muted">Since our early days on Outer Ring Road, The Rasaganga has served up dosas, rava idly and filter coffee to the Bellandur office crowd &mdash; now bringing the same flavours to your events.</p>
+        <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-geo-alt text-brand"></i> 35, Outer Ring Road, Bellandur, Bangalore</li>
+            <li class="mb-2"><i class="bi bi-telephone text-brand"></i> +91 98456 55512</li>
+            <li class="mb-2"><i class="bi bi-clock text-brand"></i> Open daily, 7:00 AM &ndash; 10:00 PM</li>
+            <li class="mb-2"><i class="bi bi-egg-fried text-brand"></i> 100% Vegetarian</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

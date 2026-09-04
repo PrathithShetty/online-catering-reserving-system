@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h1 class="mb-4">Checkout</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Order Summary</h5>
+                <ul class="list-group list-group-flush">
+                    {% for item in cart.items.all %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ item.package.name }} &times; {{ item.guest_count }} guests ({{ item.event_date|date:"M d, Y" }})</span>
+                            <strong>&#8377;{{ item.subtotal }}</strong>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="d-flex justify-content-between mt-3">
+                    <strong>Total</strong>
+                    <strong>&#8377;{{ cart.total_amount }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Delivery / Event Details</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-brand w-100">Place Booking Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

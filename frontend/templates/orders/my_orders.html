@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Bookings</h1>
+
+{% if orders %}
+    <div class="table-responsive">
+        <table class="table bg-white align-middle">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Placed On</th>
+                    <th>Packages</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.pk }}</td>
+                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                        <td>{{ order.items.count }} item{{ order.items.count|pluralize }}</td>
+                        <td>&#8377;{{ order.total_amount }}</td>
+                        <td>
+                            <span class="badge status-badge-{{ order.status }}">{{ order.get_status_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'orders:order_detail' order.pk %}" class="btn btn-sm btn-outline-secondary">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-muted">You haven't made any bookings yet.</p>
+    <a href="{% url 'catering:package_list' %}" class="btn btn-brand">Browse Packages</a>
+{% endif %}
+{% endblock %}

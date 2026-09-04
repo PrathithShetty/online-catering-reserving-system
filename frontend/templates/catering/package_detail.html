@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}{{ package.name }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-6">
+        {% if package.image %}
+            <img src="{{ package.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ package.name }}">
+        {% else %}
+            <img src="https://placehold.co/700x500?text={{ package.name|urlencode }}" class="img-fluid rounded shadow-sm" alt="{{ package.name }}">
+        {% endif %}
+    </div>
+    <div class="col-lg-6">
+        <span class="badge bg-secondary mb-2">{{ package.category.name }}</span>
+        <h1>{{ package.name }}</h1>
+        {% if package.average_rating %}
+            <p class="text-warning mb-2">
+                {% for i in "12345" %}
+                    <i class="bi bi-star{% if forloop.counter <= package.average_rating %}-fill{% endif %}"></i>
+                {% endfor %}
+                <span class="text-muted">({{ package.average_rating }} / 5)</span>
+            </p>
+        {% endif %}
+        <p class="lead">{{ package.description }}</p>
+        <p><i class="bi bi-people"></i> Suitable for {{ package.min_guests }}&ndash;{{ package.max_guests }} guests</p>
+        <h3 class="text-brand my-3">&#8377;{{ package.price_per_plate }} <small class="text-muted fs-6">per plate</small></h3>
+
+        {% if user.is_authenticated and not user.is_catering_admin %}
+            <a href="{% url 'orders:add_to_cart' package.slug %}" class="btn btn-brand btn-lg">
+                <i class="bi bi-cart-plus"></i> Book This Package
+            </a>
+        {% elif not user.is_authenticated %}
+            <a href="{% url 'accounts:login' %}?next={% url 'orders:add_to_cart' package.slug %}" class="btn btn-brand btn-lg">
+                Login to Book
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-5">
+    <h3>Menu Included</h3>
+    <div class="row g-3">
+        {% regroup package.menu_items.all by get_food_type_display as menu_groups %}
+        {% for group in menu_groups %}
+            <div class="col-md-6">
+                <h5>{{ group.grouper }}</h5>
+                <ul class="list-group mb-3">
+                    {% for item in group.list %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ item.name }}
+                            <span class="badge {% if item.is_veg %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                                {% if item.is_veg %}Veg{% else %}Non-Veg{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% empty %}
+            <p class="text-muted">Menu details coming soon.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="mt-5">
+    <h3>Customer Reviews</h3>
+    {% for review in reviews %}
+        <div class="border-bottom py-3">
+            <strong>{{ review.customer.username }}</strong>
+            <span class="text-warning ms-2">
+                {% for i in "12345" %}
+                    <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill{% endif %}"></i>
+                {% endfor %}
+            </span>
+            <p class="mb-0 text-muted">{{ review.comment }}</p>
+            <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+        </div>
+    {% empty %}
+        <p class="text-muted">No reviews yet. Be the first to book and review!</p>
+    {% endfor %}
+</div>
+{% endblock %}
