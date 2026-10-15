@@ -193,12 +193,47 @@ Then open `http://127.0.0.1:8000/`.
   `/dashboard/` (manage packages, menu items, categories, and bookings) — the dashboard
   link only appears in the navbar for admin accounts.
 
-## 6. Roadmap / natural next steps
+## 6. Deploying to production (Vercel)
+
+Locally this project uses SQLite and the local `backend/media/` folder — fine for
+development, but Vercel's filesystem is **ephemeral** (nothing written to disk survives
+between requests), so production needs a real external database and external file
+storage. `settings.py` already supports both, switched on automatically by environment
+variables — with none set, everything falls back to the exact local setup above.
+
+| Piece | Local dev | Production |
+|---|---|---|
+| Database | SQLite file | Postgres (e.g. [Neon](https://neon.tech) or [Supabase](https://supabase.com), both have a free tier) via `DATABASE_URL` |
+| Media (uploaded photos) | `backend/media/` | [Cloudinary](https://cloudinary.com) (free tier) via `CLOUDINARY_URL` |
+| Static files (CSS/images) | served by `runserver` | served by [WhiteNoise](https://whitenoise.readthedocs.io/), bundled into the app |
+
+**One-time setup:**
+
+1. Create a free Postgres database (Neon or Supabase) and copy its connection string.
+2. Create a free Cloudinary account and copy the `CLOUDINARY_URL` from its dashboard.
+3. Push this repo to GitHub, then import it in Vercel ("Add New Project").
+4. In Vercel's Project → Settings → Environment Variables, add: `DATABASE_URL`,
+   `CLOUDINARY_URL`, `DJANGO_SECRET_KEY` (a long random string — see `.env.example` for
+   how to generate one), `DJANGO_DEBUG=False`, `DJANGO_ALLOWED_HOSTS` and
+   `DJANGO_CSRF_TRUSTED_ORIGINS` (both set to your `*.vercel.app` domain once you know it).
+5. Before or right after the first deploy, run migrations (and optionally `seed_data`)
+   *against the production database* from your own machine:
+   ```bash
+   # with DATABASE_URL (and CLOUDINARY_URL) set in your local .env to the real values
+   python backend/manage.py migrate
+   python backend/manage.py seed_data
+   python backend/manage.py createsuperuser
+   ```
+6. Deploy — either `vercel --prod` from the repo root, or via Vercel's GitHub integration
+   on every push to `main`.
+
+`.env.example` documents every variable above. Copy it to `.env` (already git-ignored)
+for local testing against the real production database/media services before deploying.
+
+## 7. Roadmap / natural next steps
 
 - Real payment gateway integration at checkout (currently bookings are placed as
   "Pending" for the restaurant to confirm manually, with no online payment step).
 - Email/SMS notifications when a booking's status changes.
 - Letting a customer build a custom catering order directly from the à la carte **Menu**
   page (today the Menu page is browse-only; bookings go through curated Packages).
-- Swapping `DATABASES` in `backend/catering_system/settings.py` from SQLite to
-  MySQL/PostgreSQL for a production deployment.

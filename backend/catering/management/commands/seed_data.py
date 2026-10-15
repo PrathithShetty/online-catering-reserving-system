@@ -1,7 +1,24 @@
+from pathlib import Path
+
+from django.conf import settings
+from django.core.files import File
 from django.core.management.base import BaseCommand
 
 from catering.models import Category, CateringPackage, MenuItem
 from orders.models import Cart, Order, Review
+
+# Source photos live as static assets (frontend/static/img/rasaganga/) — this
+# command opens them and uploads the bytes through whichever MEDIA storage
+# backend is active (local disk in dev, Cloudinary in production), instead
+# of assuming a local file path, so seeding works the same way everywhere.
+SOURCE_IMAGES_DIR = Path(settings.FRONTEND_DIR) / 'static' / 'img' / 'rasaganga'
+
+
+def _attach_image(instance, field_name, source_filename, upload_as):
+    source_path = SOURCE_IMAGES_DIR / source_filename
+    with open(source_path, 'rb') as f:
+        getattr(instance, field_name).save(upload_as, File(f), save=False)
+    instance.save(update_fields=[field_name])
 
 
 class Command(BaseCommand):
@@ -19,17 +36,15 @@ class Command(BaseCommand):
         Category.objects.all().delete()
 
         categories_data = [
-            ('Wedding', 'Grand South Indian vegetarian spreads for the big day.', 'packages/rasaganga_south_thali.jpg'),
-            ('Birthday Party', 'Fun tiffin and chaat combos for birthday celebrations.', 'packages/rasaganga_vada_platter.jpg'),
-            ('Corporate Event', 'Quick, professional tiffin box catering for meetings.', 'packages/rasaganga_tiffin_spread.jpg'),
-            ('Festival', 'Traditional thalis and sweets for festive occasions.', 'site/rasaganga_storefront_night.jpg'),
+            ('Wedding', 'Grand South Indian vegetarian spreads for the big day.', 'food5.jpg', 'wedding.jpg'),
+            ('Birthday Party', 'Fun tiffin and chaat combos for birthday celebrations.', 'food2.jpg', 'birthday-party.jpg'),
+            ('Corporate Event', 'Quick, professional tiffin box catering for meetings.', 'food4.jpg', 'corporate-event.jpg'),
+            ('Festival', 'Traditional thalis and sweets for festive occasions.', 'exterior.jpg', 'festival.jpg'),
         ]
         categories = {}
-        for name, desc, image in categories_data:
+        for name, desc, source_image, upload_as in categories_data:
             category = Category.objects.create(name=name, description=desc)
-            if image:
-                category.image.name = image
-                category.save(update_fields=['image'])
+            _attach_image(category, 'image', source_image, upload_as)
             categories[name] = category
 
         # Real à la carte menu — transcribed from The Rasaganga's own menu boards.
@@ -101,45 +116,45 @@ class Command(BaseCommand):
             (
                 'Rasaganga Wedding Thali', 'Wedding', 599, 100, 1000,
                 m('Rasaganga Spl Thali', 'South Indian Thali', 'North Indian Thali', 'Payasam', 'Gulab Jamun', 'Filter Coffee'),
-                'packages/rasaganga_south_thali.jpg',
+                'food5.jpg', 'rasaganga-wedding-thali.jpg',
             ),
             (
                 'Filter Coffee & Tiffin Breakfast', 'Wedding', 349, 50, 500,
                 m('Masala Dosa', 'Rava Idly', 'Masala Vada', 'Filter Coffee'),
-                'packages/rasaganga_tiffin_spread.jpg',
+                'food4.jpg', 'filter-coffee-tiffin-breakfast.jpg',
             ),
             (
                 'Birthday Chaat & Snacks Combo', 'Birthday Party', 299, 20, 150,
                 m('Pani Puri', 'Bhel Puri', 'Sev Puri', 'Pav Bhaji', 'Fresh Lime Soda'),
-                'packages/rasaganga_vada_platter.jpg',
+                'food2.jpg', 'birthday-chaat-snacks-combo.jpg',
             ),
             (
                 'Kids Dosa Party', 'Birthday Party', 199, 15, 80,
                 m('Plain Dosa', 'Masala Dosa', 'Vada Pav', 'Payasam'),
-                'packages/rasaganga_naan_basket.jpg',
+                'food3.jpg', 'kids-dosa-party.jpg',
             ),
             (
                 'Corporate Tiffin Box', 'Corporate Event', 249, 10, 200,
                 m('Rava Idly', 'Masala Vada', 'Pav Bhaji', 'Filter Coffee'),
-                'packages/rasaganga_tiffin_spread.jpg',
+                'food4.jpg', 'corporate-tiffin-box.jpg',
             ),
             (
                 'Boardroom Filter Coffee Meet', 'Corporate Event', 199, 10, 100,
                 m('Uddina Vada', 'Samosa Masala', 'Filter Coffee'),
-                'packages/rasaganga_vada_platter.jpg',
+                'food2.jpg', 'boardroom-filter-coffee-meet.jpg',
             ),
             (
                 'Indo-Chinese Corporate Combo', 'Corporate Event', 279, 15, 150,
                 m('Veg Fried Rice', 'Spring Roll', 'Veg Noodles', 'Sweet Lassi'),
-                'packages/rasaganga_kulcha_basket.jpg',
+                'food1.jpg', 'indo-chinese-corporate-combo.jpg',
             ),
             (
                 'Festival Sweets & Savouries Thali', 'Festival', 449, 20, 400,
                 m('Rasaganga Spl Thali', 'Masala Puri', 'Gulab Jamun', 'Payasam'),
-                'packages/rasaganga_south_thali.jpg',
+                'food5.jpg', 'festival-sweets-savouries-thali.jpg',
             ),
         ]
-        for name, cat_name, price, min_g, max_g, items, image in packages_data:
+        for name, cat_name, price, min_g, max_g, items, source_image, upload_as in packages_data:
             package = CateringPackage.objects.create(
                 category=categories[cat_name],
                 name=name,
@@ -152,8 +167,6 @@ class Command(BaseCommand):
                 max_guests=max_g,
             )
             package.menu_items.set(items)
-            if image:
-                package.image.name = image
-                package.save(update_fields=['image'])
+            _attach_image(package, 'image', source_image, upload_as)
 
         self.stdout.write(self.style.SUCCESS('The Rasaganga catering data seeded successfully.'))

@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR = the "backend" folder (Python/Django code, database).
@@ -21,17 +25,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 PROJECT_ROOT = BASE_DIR.parent
 FRONTEND_DIR = PROJECT_ROOT / 'frontend'
 
+# Loads a local ".env" file (git-ignored) into the environment when present —
+# harmless in production (Vercel), where these variables are already set via
+# its own dashboard rather than a file.
+load_dotenv(PROJECT_ROOT / '.env')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#ybo^ae_#owjvo_s!*fla$#0$64pwhz6d8f5-!(l&+_idn$%(4'
+# Falls back to the original dev-only key so `manage.py runserver` still
+# works untouched with no .env file at all.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-#ybo^ae_#owjvo_s!*fla$#0$64pwhz6d8f5-!(l&+_idn$%(4',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()
+] + ['localhost', '127.0.0.1', '.vercel.app']
+
+# Vercel serves the app behind its own HTTPS proxy — this tells Django to
+# trust the proxy's header saying a request was HTTPS, and to trust POSTs
+# (like login/checkout) coming from the deployed domain for CSRF purposes.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+] + ['https://*.vercel.app']
 
 
 # Application definition
@@ -42,7 +63,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
     'accounts',
     'catering',
     'orders',
@@ -52,6 +75,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -82,13 +106,23 @@ WSGI_APPLICATION = 'catering_system.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
+#
+# DATABASE_URL (e.g. a Neon/Supabase Postgres connection string) takes over
+# whenever it's set — this is what production (Vercel) uses. With no
+# DATABASE_URL at all (plain local dev, no .env), it falls back to the
+# original local SQLite file untouched.
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True),
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -124,13 +158,34 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
+#
+# Served by WhiteNoise directly from the deployed function — no separate
+# static file host needed, on Vercel or anywhere else.
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [FRONTEND_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': STATICFILES_STORAGE,
+    },
+}
+
+# Media (user-uploaded package/menu/category photos)
+#
+# CLOUDINARY_URL takes over whenever it's set — required in production,
+# since Vercel's own filesystem is ephemeral and can't be used for uploads.
+# With no CLOUDINARY_URL (plain local dev), uploads keep going to the local
+# backend/media/ folder exactly as before.
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+if os.environ.get('CLOUDINARY_URL'):
+    STORAGES['default'] = {'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage'}
+else:
+    STORAGES['default'] = {'BACKEND': 'django.core.files.storage.FileSystemStorage'}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

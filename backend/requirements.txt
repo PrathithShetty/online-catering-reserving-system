@@ -1,2 +1,10 @@
 Django>=6.1,<6.2
 Pillow>=11.0
+
+# Production deployment (Vercel + external Postgres + Cloudinary media)
+dj-database-url>=2.3
+psycopg[binary]>=3.2
+whitenoise>=6.8
+django-cloudinary-storage>=0.3
+cloudinary>=1.41
+python-dotenv>=1.0
